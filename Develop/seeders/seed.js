@@ -1,7 +1,20 @@
 let mongoose = require("mongoose");
 let db = require("../models");
 
-mongoose.connect("mongodb://localhost/workout", {
+const PORT = process.env.PORT || 2000;
+
+const User = require("./userModel.js");
+
+const app = express();
+
+app.use(logger("dev"));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(express.static("public"));
+
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", {
   useNewUrlParser: true,
   useFindAndModify: false
 });
@@ -123,6 +136,14 @@ let workoutSeed = [
     ]
   }
 ];
+
+
+db.createUser
+
+
+
+
+
 
 db.Workout.deleteMany({})
   .then(() => db.Workout.collection.insertMany(workoutSeed))
