@@ -1,22 +1,36 @@
-let mongoose = require("mongoose");
-let db = require("../models");
-
+const mongoose = require("mongoose");
+let express = require("express");
+require('dotenv').config()
+// let db = require("../models");
 const PORT = process.env.PORT || 2000;
-
-const User = require("./userModel.js");
-
+// const User = require("./userModel.js");
 const app = express();
-
-app.use(logger("dev"));
-
+// app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.use(express.static("public"));
 
+
+console.log(process.env.MONGODB_URI)
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", {
   useNewUrlParser: true,
   useFindAndModify: false
+});
+
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  db.collection('exercises').deleteMany({})
+  .then(() => db.collection('exercises').insertMany(workoutSeed))
+  .then(data => {
+    console.log(data.result.n + " records inserted!");
+    process.exit(0);
+  })
+  .catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
+console.log("we're connected!")
 });
 
 let workoutSeed = [
@@ -137,21 +151,3 @@ let workoutSeed = [
   }
 ];
 
-
-db.createUser
-
-
-
-
-
-
-db.Workout.deleteMany({})
-  .then(() => db.Workout.collection.insertMany(workoutSeed))
-  .then(data => {
-    console.log(data.result.n + " records inserted!");
-    process.exit(0);
-  })
-  .catch(err => {
-    console.error(err);
-    process.exit(1);
-  });
