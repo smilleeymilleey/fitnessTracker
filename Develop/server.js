@@ -29,6 +29,11 @@ app.get('/exercise', function(req, res){
     res.sendFile(__dirname + '/public/exercise.html');
     });
 
+app.post('/api/workouts', function(req, res){
+    console.log(req.body)
+})
+
+
 app.get('/stats', function(req, res){
     res.sendFile(__dirname + '/public/stats.html');
     });
