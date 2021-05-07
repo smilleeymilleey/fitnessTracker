@@ -1,7 +1,8 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-const Cardio = require('./models/Cardio');
+const path = require("path");
+const Workout = require('./models/Workout');
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,35 +19,44 @@ app.use(express.static("public"));
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", { useNewUrlParser: true });
 
-// db.Library.create({ name: "Campus Library" })
-//   .then(dbLibrary => {
-//     console.log(dbLibrary);
-//   })
-//   .catch(({message}) => {
-//     console.log(message);
-//   });
+
 
 app.get('/exercise', function(req, res){
     res.sendFile(__dirname + '/public/exercise.html');
     });
 
-app.post('/api/workouts', function(req, res){
-   const running = new mongoose.cardioSchema({
-       miles: req.body.miles 
-   })
-   post.save(function (err, running) {
-    if (err) { return next(err) }
-    res.json(201, running)
+app.post('/api/workouts/', function({ body }, res){
+  Workout.find({}).sort({day: -1}).limit(1)
+  .then(dbWorkout => {
+    res.json(dbWorkout);
   })
-})
+  .catch(err => {
+    res.json(err);
+  }); 
+});
 
+app.put('/api/workouts/:id', function(req, res){
+    Workout.findByIdAndUpdate(req.params.id, { $push: { exercises: req.body } }, { new: true })
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+})
 
 app.get('/stats', function(req, res){
     res.sendFile(__dirname + '/public/stats.html');
     });
     
 app.get('/api/workouts/range', function(req, res){
-   
+    Workout.find({}).sort({day: -1}).limit(7)
+      .then(dbWorkout => {
+        res.json(dbWorkout);
+      })
+      .catch(err => {
+        res.json(err);
+      });
     });
 
 app.post("/exercise", (req, res) => {
@@ -54,37 +64,6 @@ app.post("/exercise", (req, res) => {
 
     });
 
-
-// app.get("/books", (req, res) => {
-//   db.Book.find({})
-//     .then(dbBook => {
-//       res.json(dbBook);
-//     })
-//     .catch(err => {
-//       res.json(err);
-//     });
-// });
-
-// app.get("/library", (req, res) => {
-//   db.Library.find({})
-//     .then(dbLibrary => {
-//       res.json(dbLibrary);
-//     })
-//     .catch(err => {
-//       res.json(err);
-//     });
-// });
-
-// app.get("/populated", (req, res) => {
-//   db.Library.find({})
-//     .populate("books")
-//     .then(dbLibrary => {
-//       res.json(dbLibrary);
-//     })
-//     .catch(err => {
-//       res.json(err);
-//     });
-// });
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
