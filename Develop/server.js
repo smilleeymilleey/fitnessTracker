@@ -1,6 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const Cardio = require('./models/Cardio');
 
 const PORT = process.env.PORT || 3000;
 
@@ -30,7 +31,13 @@ app.get('/exercise', function(req, res){
     });
 
 app.post('/api/workouts', function(req, res){
-    console.log(req.body)
+   const running = new mongoose.cardioSchema({
+       miles: req.body.miles 
+   })
+   post.save(function (err, running) {
+    if (err) { return next(err) }
+    res.json(201, running)
+  })
 })
 
 
@@ -42,7 +49,7 @@ app.get('/api/workouts/range', function(req, res){
    
     });
 
-app.post("/exercise", ({body}, res) => {
+app.post("/exercise", (req, res) => {
  
 
     });
